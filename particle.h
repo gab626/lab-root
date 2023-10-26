@@ -8,7 +8,7 @@ class Particle {
   Particle(const char* name, double x = 0, double y = 0, double z = 0);
   int GetIndex() const;
   static void AddParticleType(const char* name, double mass, int charge,
-                              double width = 0);
+                              double width = 0);  // NON FARLA VOID?
   void SetIndex(int index);  // vanno usati anche in costruttore?
   void SetIndex(const char* name);
   static void ListParticles();  // non posso farlo const ovviamente
@@ -18,7 +18,7 @@ class Particle {
   double GetPz() const;
   double GetMass() const;
   double Energy() const;
-  double InvMass(Particle& p); // è prod scalare?
+  double InvMass(Particle& p);
   void SetP(double px, double py, double pz); // MANCA IMPLEMENTAZIONE
 
  private:

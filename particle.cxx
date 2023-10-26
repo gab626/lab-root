@@ -7,17 +7,22 @@
 
 int Particle::fNParticleType = 0;
 int Particle::FindParticle(const char* name) {  // forse si può migliorare
+  int index;
   int i{0};
   for (; i < fNParticleType; i++) {
-    if (name == fParticleType[i]->GetName()) return i;
+    if (name == fParticleType[i]->GetName()) {
+      index = i;
+      break;  // non mi piace questo break
+    }
   }
   if (i == fNParticleType) {
     std::cout << "Particle type not found.\n";
-    return -1;
+    index = -1;
   }
+  return index;
 }
 void Particle::AddParticleType(const char* name, double mass, int charge,
-                               double width = 0) {  // DA RIVEDERE
+                               double width = 0) {  // DA MODIFICARE
   if (Particle::FindParticle(name) == -1 &&
       fNParticleType <= fMaxNumParticleType) {
     if (width != 0) {
