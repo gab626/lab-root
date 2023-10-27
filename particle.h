@@ -19,7 +19,7 @@ class Particle {
   double GetMass() const;
   double Energy() const;
   double InvMass(Particle& p);
-  void SetP(double px, double py, double pz); // MANCA IMPLEMENTAZIONE
+  void SetP(double px, double py, double pz);
 
  private:
   static const int fMaxNumParticleType = 10;
