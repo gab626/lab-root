@@ -8,10 +8,10 @@ class Particle {
   Particle(const char* name, double x = 0, double y = 0, double z = 0);
   int GetIndex() const;
   static void AddParticleType(const char* name, double mass, int charge,
-                              double width = 0);  // NON FARLA VOID?
-  void SetIndex(int index);  // vanno usati anche in costruttore?
+                              double width = 0);
+  void SetIndex(int index);
   void SetIndex(const char* name);
-  static void ListParticles();  // non posso farlo const ovviamente
+  static void ListParticles();
   void Print() const;
   double GetPx() const;
   double GetPy() const;

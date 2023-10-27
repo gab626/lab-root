@@ -6,51 +6,55 @@
 #include "resonancetype.h"
 
 int Particle::fNParticleType = 0;
+  ParticleType* Particle::fParticleType[Particle::fMaxNumParticleType] {};
+
 int Particle::FindParticle(const char* name) {  // forse si può migliorare
-  int index;
   int i{0};
   for (; i < fNParticleType; i++) {
     if (name == fParticleType[i]->GetName()) {
-      index = i;
-      break;  // non mi piace questo break
+      return i;
     }
   }
   if (i == fNParticleType) {
-    std::cout << "Particle type not found.\n";
-    index = -1;
+    std::cout << "Particle type not found.\n";  // questo è cringe
+    i = -1;
   }
-  return index;
+  return i;
 }
 void Particle::AddParticleType(const char* name, double mass, int charge,
-                               double width = 0) {  // DA MODIFICARE
+                               double width) {
   if (Particle::FindParticle(name) == -1 &&
       fNParticleType <= fMaxNumParticleType) {
     if (width != 0) {
-      ResonanceType P{name, mass, charge, width};
-      fParticleType[fNParticleType] = &P;
+      ResonanceType* P = new ResonanceType{name, mass, charge, width};
+      fParticleType[fNParticleType] = P;
     } else {
-      ParticleType P{name, mass, charge};
-      fParticleType[fNParticleType] = &P;
-    }  // non mi convince
+      ParticleType* P = new ParticleType{name, mass, charge};
+      fParticleType[fNParticleType] = P;
+    }
     fNParticleType++;
+  } else {
+    std::cout << "Particle already added!\n";
   }
 }
 void Particle::SetIndex(int index) { fIndex = index; }
 void Particle::SetIndex(const char* name) {
   fIndex = Particle::FindParticle(name);
 }
-Particle::Particle(const char* name, double x = 0, double y = 0, double z = 0)
-    : fPx(x), fPy(y), fPz(z) {  // DA RIVEDERE
+Particle::Particle(const char* name, double x, double y, double z)
+    : fPx(x), fPy(y), fPz(z) {
   if (Particle::FindParticle(name) != -1)
-    Particle::SetIndex(Particle::FindParticle(name));
+    Particle::SetIndex(name);
   else {
     Particle::SetIndex(fNParticleType);
   }
 }
 int Particle::GetIndex() const { return fIndex; }
-void Particle::ListParticles() {  // da migliorare
+void Particle::ListParticles() {
   for (int i{0}; i < fNParticleType; i++) {
-    Particle::fParticleType[i]->Print();
+    std::cout << "Particle type in index: " << i << '\n';
+     Particle::fParticleType[i]->Print();
+     std::cout << "---------------------------------------------\n";
   }
 }
 void Particle::Print() const {
