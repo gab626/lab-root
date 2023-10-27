@@ -41,7 +41,7 @@ void Particle::SetIndex(const char* name) {
 Particle::Particle(const char* name, double x, double y, double z)
     : fPx(x), fPy(y), fPz(z) {
   if (Particle::FindParticle(name) != -1)
-    Particle::SetIndex(name);
+    fIndex = Particle::FindParticle(name);
   else
     std::cout << "Particle type " << name << " not found.\n";
 }
