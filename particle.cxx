@@ -52,7 +52,7 @@ Particle::Particle(const char* name, double x, double y, double z)
 }
 
 int Particle::GetIndex() const { return fIndex; }
-void Particle::ListParticles() {
+void Particle::PrintArray() {
   std::cout << "LIST OF PARTICLE/RESONANCE TYPES\n";
   for (int i{0}; i < fNParticleType; i++) {
     std::cout << "Particle type in index " << i << '\n';

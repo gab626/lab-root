@@ -11,7 +11,7 @@ class Particle {
                               double width = 0);
   void SetIndex(int index);
   void SetIndex(const char* name);
-  static void ListParticles();
+  static void PrintArray();
   void Print() const;
   double GetPx() const;
   double GetPy() const;
