@@ -20,7 +20,7 @@ void Particle::AddParticleType(const char* name, double mass, int charge,
                                double width) {
   if (Particle::FindParticle(name) == -1 &&
       fNParticleType <= fMaxNumParticleType) {
-    std::cout << "Adding new particle " << name << ".\n";
+    std::cout << "Adding new particle " << name << '\n';
     if (width != 0) {
       ResonanceType* P = new ResonanceType{name, mass, charge, width};
       fParticleType[fNParticleType] = P;
@@ -70,10 +70,10 @@ double Particle::Energy() const {
   return std::sqrt(m * m + fPx * fPx + fPy * fPy + fPz * fPz);
 }
 double Particle::InvMass(Particle& p) {
-  double sum_E = this->Energy() + p.Energy();
-  double sum_Px = this->fPx + p.fPx;
-  double sum_Py = this->fPy + p.fPy;
-  double sum_Pz = this->fPz + p.fPz;
+  double sum_E = Energy() + p.Energy();
+  double sum_Px = fPx + p.fPx;
+  double sum_Py = fPy + p.fPy;
+  double sum_Pz = fPz + p.fPz;
   return std::sqrt(sum_E * sum_E - sum_Px * sum_Px - sum_Py * sum_Py -
                    sum_Pz * sum_Pz);
 }
