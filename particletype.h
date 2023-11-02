@@ -9,6 +9,7 @@ class ParticleType {
   double GetMass() const;
   int GetCharge() const;
   virtual void Print() const;
+  virtual double GetWidth() const; // va bene o abstract pure?
 
  private:
   const char* fName;

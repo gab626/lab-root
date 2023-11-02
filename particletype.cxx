@@ -13,3 +13,4 @@ void ParticleType::Print() const {
             << "Mass: " << fMass << '\n'
             << "Charge: " << fCharge << '\n';
 }
+double ParticleType::GetWidth() const { return 0; }

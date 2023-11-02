@@ -17,9 +17,10 @@ class Particle {
   double GetPy() const;
   double GetPz() const;
   double GetMass() const;
-  double Energy() const;
+  double GetEnergy() const;
   double InvMass(Particle& p);
   void SetP(double px, double py, double pz);
+  int Decay2body(Particle &dau1,Particle &dau2) const;
 
  private:
   static const int fMaxNumParticleType = 10;
@@ -30,6 +31,7 @@ class Particle {
   double fPy;
   double fPz;
   static int FindParticle(const char* name);
+  void Boost(double bx, double by, double bz);
 };
 
 #endif
