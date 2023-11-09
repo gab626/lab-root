@@ -6,6 +6,7 @@
 class Particle {
  public:
   Particle(const char* name, double x = 0, double y = 0, double z = 0);
+  Particle();
   int GetIndex() const;
   static void AddParticleType(const char* name, double mass, int charge,
                               double width = 0);
@@ -20,7 +21,7 @@ class Particle {
   double GetEnergy() const;
   double InvMass(Particle& p);
   void SetP(double px, double py, double pz);
-  int Decay2body(Particle &dau1,Particle &dau2) const;
+  int Decay2body(Particle &dau1,Particle &dau2);  // tolto il const per ora
 
  private:
   static const int fMaxNumParticleType = 10;

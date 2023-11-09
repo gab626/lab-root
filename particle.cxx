@@ -10,12 +10,10 @@ int Particle::fNParticleType = 0;
 ParticleType* Particle::fParticleType[Particle::fMaxNumParticleType]{};
 
 int Particle::FindParticle(const char* name) {
-  int i{0};
-  for (; i < fNParticleType; i++) {
+  for (int i{0}; i < fNParticleType; i++) {
     if (name == fParticleType[i]->GetName()) return i;
   }
-  if (i == fNParticleType) i = -1;
-  return i;
+  return -1;
 }
 
 void Particle::AddParticleType(const char* name, double mass, int charge,
@@ -50,6 +48,8 @@ Particle::Particle(const char* name, double x, double y, double z)
   else
     std::cout << "Particle type " << name << " not found.\n";
 }
+
+Particle::Particle() {};
 
 int Particle::GetIndex() const { return fIndex; }
 void Particle::PrintArray() {
@@ -93,7 +93,7 @@ void Particle::SetP(double px, double py, double pz) {
   fPz = pz;
 }
 
-int Particle::Decay2body(Particle& dau1, Particle& dau2) const {
+int Particle::Decay2body(Particle& dau1, Particle& dau2) {
   if (GetMass() == 0.0) {
     printf("Decayment cannot be preformed if mass is zero\n");
     return 1;
