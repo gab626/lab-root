@@ -83,29 +83,30 @@ int main() {
       h[3]->Fill(std::sqrt(px * px + py * py + pz * pz));
       h[4]->Fill(std::sqrt(px * px + py * py));
       h[5]->Fill(EventParticles[j].GetEnergy());
-    
-      Particle pp{"Pione+"};
-      Particle km{"Kaone-"};
-      Particle pm{"Pione-"};
-      Particle kp{"Kaone+"};
-        if (EventParticles[j].GetIndex() == k_index) {
-          double x = gRandom->Rndm();
-          if (x < .5) {
-            EventParticles[j].Decay2body(pp, km);
-            EventParticles[100 + new_particles] = pp;
-            EventParticles[101 + new_particles] = km;
-            new_particles += 2;
-          } else {
-            EventParticles[j].Decay2body(pm, kp);
-            EventParticles[100 + new_particles] = pm;
-            EventParticles[101 + new_particles] = kp;
-            new_particles += 2;
-          }
+
+      if (EventParticles[j].GetIndex() == k_index) {
+        double x = gRandom->Rndm();
+        if (x < .5) {
+          Particle pp{"Pione+"};
+          Particle km{"Kaone-"};
+          EventParticles[j].Decay2body(pp, km);
+          EventParticles[100 + new_particles] = pp;
+          EventParticles[101 + new_particles] = km;
+          new_particles += 2;
+        } else {
+          Particle pm{"Pione-"};
+          Particle kp{"Kaone+"};
+          EventParticles[j].Decay2body(pm, kp);
+          EventParticles[100 + new_particles] = pm;
+          EventParticles[101 + new_particles] = kp;
+          new_particles += 2;
         }
       }
+    }
 
-      for (int n = 0; n < 100 + new_particles; n += 2) {
-        double inv_mass = EventParticles[n].InvMass(EventParticles[n + 1]);
+    for (int n = 0; n < 100; n++) {
+      for (int p = 0; p < 100; p++) {
+        double inv_mass = EventParticles[n].InvMass(EventParticles[p]);
         m[0]->Fill(inv_mass);
         /* if (EventParticles[n].GetCharge() == EventParticles[l].GetCharge())
           m[1]->Fill(inv_mass);
@@ -113,20 +114,21 @@ int main() {
           m[2]->Fill(inv_mass); */
       }
     }
-
-    TCanvas* c1 = new TCanvas("c1", "Histograms", 200, 10, 1000, 1000);
-    c1->Divide(3, 2);
-    for (int i = 0; i < 6; i++) {
-      c1->cd(i + 1);
-      h[i]->Draw();
-    }
-
-    TCanvas* c2 = new TCanvas("c2", "Invariant mass", 200, 10, 1000, 1000);
-    c2->Divide(3, 2);
-    for (int i = 0; i < 3; i++) {
-      c2->cd(i + 1);
-      m[i]->Draw();
-    }
-
-    gBenchmark->Show("Simulation time");
   }
+
+  TCanvas* c1 = new TCanvas("c1", "Histograms", 200, 10, 1000, 1000);
+  c1->Divide(3, 2);
+  for (int i = 0; i < 6; i++) {
+    c1->cd(i + 1);
+    h[i]->Draw();
+  }
+
+  TCanvas* c2 = new TCanvas("c2", "Invariant mass", 200, 10, 1000, 1000);
+  c2->Divide(3, 2);
+  for (int i = 0; i < 3; i++) {
+    c2->cd(i + 1);
+    m[i]->Draw();
+  }
+
+  gBenchmark->Show("Simulation time");
+}
