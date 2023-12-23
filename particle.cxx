@@ -74,6 +74,7 @@ double Particle::GetPx() const { return fPx; }
 double Particle::GetPy() const { return fPy; }
 double Particle::GetPz() const { return fPz; }
 double Particle::GetMass() const { return fParticleType[fIndex]->GetMass(); }
+int Particle::GetCharge() const { return fParticleType[fIndex]->GetCharge(); }
 double Particle::GetEnergy() const {
   double m = Particle::GetMass();
   return std::sqrt(m * m + fPx * fPx + fPy * fPy + fPz * fPz);
@@ -96,7 +97,7 @@ void Particle::SetP(double px, double py, double pz) {
 
 int Particle::Decay2body(Particle& dau1, Particle& dau2) {
   if (GetMass() == 0.0) {
-    printf("Decayment cannot be preformed if mass is zero\n");
+    printf("Decayment cannot be performed if mass is zero\n");
     return 1;
   }
   double massMot = GetMass();
