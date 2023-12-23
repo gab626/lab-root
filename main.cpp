@@ -16,12 +16,11 @@ int main() {
   Particle::AddParticleType("K*", .89166, 0, .050);
   gRandom->SetSeed();
 
-  std::vector<Particle> EventParticles(100);  // vedi con array nativi
+  Particle EventParticles[120];  // vedi con array nativi
 
   TH1F* h[6];
   h[0] = new TH1F("h1", "Particle types", 7, 0, 7);
-  h[1] = new TH1F("h2", "Azimuthal angle", 10, 0,
-                  2 * M_PI);  // rivedere tutti i valori Nbins
+  h[1] = new TH1F("h2", "Azimuthal angle", 10, 0, 2 * M_PI);
   h[2] = new TH1F("h3", "Polar angle", 10, 0, M_PI);
   h[3] = new TH1F("h4", "Impulse", 100, 0, 7);
   h[4] = new TH1F("h5", "Transverse impulse", 100, 0, 7);
@@ -47,29 +46,30 @@ int main() {
   // m[5] = new TH1F("m6", "Particles energy", 100, 0, 7);
   for (int i = 0; i < 3; i++) m[i]->Sumw2();
 
-  for (int i = 0; i < 1E5;
-       i++) {  // simulazione 10^5 eventi DA RISISTEMARE IL NUMERO DI EVENTI
+  for (int i = 0; i < 1E5; i++) {  // simulazione 10^5 eventi
+
+    int k_index;
 
     for (int j = 0; j < 100; j++) {  // setting type x 100 particles x evento
-                                     // (chiamare SetIndex con name?)
+
       double x = gRandom->Rndm();
-      int index = 0;
       if (x < .4)
-        index = 0;
+        EventParticles[j].SetIndex("Pione+");
       else if (x < .8)
-        index = 1;
+        EventParticles[j].SetIndex("Pione-");
       else if (x < .85)
-        index = 2;
+        EventParticles[j].SetIndex("Kaone+");
       else if (x < .9)
-        index = 3;
+        EventParticles[j].SetIndex("Kaone-");
       else if (x < .945)
-        index = 4;
+        EventParticles[j].SetIndex("Protone+");
       else if (x < .99)
-        index = 5;
-      else
-        index = 6;
-      EventParticles[j].SetIndex(index);
-      h[0]->Fill(index);
+        EventParticles[j].SetIndex("Protone-");
+      else {
+        EventParticles[j].SetIndex("K*");
+        k_index = EventParticles[j].GetIndex();
+      }
+      h[0]->Fill(EventParticles[j].GetIndex());
 
       double phi = gRandom->Uniform(0, 2 * M_PI);
       double theta = gRandom->Uniform(0, M_PI);
@@ -92,31 +92,30 @@ int main() {
     Particle pm{"Pione-"};
     Particle kp{"Kaone+"};
     for (int k = 0; k < 100; k++) {  // decadimento delle K* particles
-      if (EventParticles[k].GetIndex() == 6) {
+      if (EventParticles[k].GetIndex() == k_index) {
         double x = gRandom->Rndm();
         if (x < .5) {
-          EventParticles[k].Decay2body(
-              pp, km);  // return di decay2body è verificato?
-          EventParticles.push_back(
-              pp);  // decay2body dovrebbe restituire un int
-          EventParticles.push_back(km);
+          EventParticles[k].Decay2body(pp, km);
+          EventParticles[100 + new_particles] = pp;
+          EventParticles[101 + new_particles] = km;
           new_particles += 2;
         } else {
           EventParticles[k].Decay2body(pm, kp);
-          EventParticles.push_back(pm);
-          EventParticles.push_back(kp);
+          EventParticles[100 + new_particles] = pm;
+          EventParticles[101 + new_particles] = kp;
           new_particles += 2;
         }
       }
     }
 
     for (int n = 0; n < 100 + new_particles; n += 2) {
-      double inv_mass = EventParticles[n].InvMass(EventParticles[n+1]);
+      double inv_mass = EventParticles[n].InvMass(EventParticles[n + 1]);
       m[0]->Fill(inv_mass);
-      /* int sign_1 = Particle::fParticleType[EventParticles[n].GetIndex()].GetCharge();
-      int sign_2 = Particle::fParticleType[EventParticles[n+1].GetIndex()].GetCharge();
-      if ( sign_1 * sign_2 == 1) m[1]->Fill(inv_mass);
-      else m[2]->Fill(inv_mass); */
+      /* int sign_1 =
+      Particle::fParticleType[EventParticles[n].GetIndex()].GetCharge(); int
+      sign_2 =
+      Particle::fParticleType[EventParticles[n+1].GetIndex()].GetCharge(); if (
+      sign_1 * sign_2 == 1) m[1]->Fill(inv_mass); else m[2]->Fill(inv_mass); */
     }
   }
 
