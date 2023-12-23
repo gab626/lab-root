@@ -52,6 +52,7 @@ Particle::Particle(const char* name, double x, double y, double z)
 Particle::Particle() {};
 
 int Particle::GetIndex() const { return fIndex; }
+
 void Particle::PrintArray() {
   std::cout << "LIST OF PARTICLE/RESONANCE TYPES\n";
   for (int i{0}; i < fNParticleType; i++) {
@@ -98,7 +99,6 @@ int Particle::Decay2body(Particle& dau1, Particle& dau2) {
     printf("Decayment cannot be preformed if mass is zero\n");
     return 1;
   }
-  // MODIFICATO fIParticle IN fIndex
   double massMot = GetMass();
   double massDau1 = dau1.GetMass();
   double massDau2 = dau2.GetMass();

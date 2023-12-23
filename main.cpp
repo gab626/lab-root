@@ -6,6 +6,7 @@
 #include "resonancetype.h"
 
 int main() {
+  gBenchmark->Start("Simulation time");
   Particle::AddParticleType("Pione+", .13957, 1);
   Particle::AddParticleType("Pione-", .13957, -1);
   Particle::AddParticleType("Kaone+", .49367, 1);
@@ -15,54 +16,117 @@ int main() {
   Particle::AddParticleType("K*", .89166, 0, .050);
   gRandom->SetSeed();
 
-  std::vector<Particle> EventParticles(
-      120);  // vedi con array nativi
-             // questa dichiarazione non va bene, rivedere costruttore?
+  std::vector<Particle> EventParticles(120);  // vedi con array nativi
 
-  for (int i = 0; i < 1E5; i++) {    // simulazione 10^5 eventi
+  TH1F* h[6];
+  h[0] = new TH1F("h1", "Particle types", 7, 0, 7);
+  h[1] = new TH1F("h2", "Azimuthal angle", 20, 0,
+                  2 * M_PI);  // rivedere tutti i valori Nbins
+  h[2] = new TH1F("h3", "Polar angle", 20, 0, M_PI);
+  h[3] = new TH1F("h4", "Impulse", 100, 0, 7);
+  h[4] = new TH1F("h5", "Transverse impulse", 100, 0, 7);
+  h[5] = new TH1F("h6", "Particles energy", 100, 0, 7);
+
+  h[0]->SetFillColor(4);
+  h[0]->SetLineColor(1);
+  for (int i = 1; i < 3; i++) {
+    h[i]->SetFillColor(2);
+    h[i]->SetLineColor(1);
+  }
+  for (int i = 3; i < 6; i++) {
+    h[i]->SetFillColor(3);
+    h[i]->SetLineColor(1);
+  }
+
+  TH1F* m[6];
+  m[0] = new TH1F("m1", "Inv mass of all particles", 100, 0, 2);
+  /*m[1] = new TH1F("m2", "Azimuthal angle", 50, 0, 2 * M_PI);
+  m[2] = new TH1F("m3", "Polar angle", 50, 0, M_PI);
+  m[3] = new TH1F("m4", "Impulse", 100, 0, 7);
+  m[4] = new TH1F("m5", "Transverse impulse", 100, 0, 7);
+  m[5] = new TH1F("m6", "Particles energy", 100, 0, 7);*/
+  for (int i = 0; i < 1; i++) m[i]->Sumw2();
+
+  for (int i = 0; i < 1E2;
+       i++) {  // simulazione 10^5 eventi DA RISISTEMARE IL NUMERO DI EVENTI
+
     for (int j = 0; j < 100; j++) {  // setting type x 100 particles x evento
+                                     // (chiamare SetIndex con name?)
       double x = gRandom->Rndm();
+      int index = 0;
       if (x < .4)
-        EventParticles[j].SetIndex(0);  // chiama SetIndex con name
+        index = 0;
       else if (x < .8)
-        EventParticles[j].SetIndex(1);
+        index = 1;
       else if (x < .85)
-        EventParticles[j].SetIndex(2);
+        index = 2;
       else if (x < .9)
-        EventParticles[j].SetIndex(3);
+        index = 3;
       else if (x < .945)
-        EventParticles[j].SetIndex(4);
+        index = 4;
       else if (x < .99)
-        EventParticles[j].SetIndex(5);
+        index = 5;
       else
-        EventParticles[j].SetIndex(6);
+        index = 6;
+      EventParticles[j].SetIndex(index);
+      h[0]->Fill(index);
 
-      for (int k = 0; k < 100; k++) {  // decadimento delle K* particles
-        if (EventParticles[k].GetIndex() == 6) {
-          double x = gRandom->Rndm();
-          if (x < .5) {
-            Particle pp{"Pione+"};
-            Particle km{"Kaone-"};
-            EventParticles[k].Decay2body(pp, km); // return di decay2body è verificato?
-            EventParticles.push_back(pp); // decay2body dovrebbe restituire un int
-            EventParticles.push_back(km);
-          } else {
-            Particle pm{"Pione-"};
-            Particle kp{"Kaone+"};
-            EventParticles[k].Decay2body(pm, kp);
-            EventParticles.push_back(pm);
-            EventParticles.push_back(kp);
-          }
+      double phi = gRandom->Uniform(0, 2 * M_PI);
+      double theta = gRandom->Uniform(0, M_PI);
+      double rho = gRandom->Exp(1);
+      EventParticles[j].SetP(rho * sin(theta) * cos(phi),
+                             rho * sin(theta) * sin(phi), rho * cos(theta));
+      h[1]->Fill(phi);
+      h[2]->Fill(theta);
+      double px = EventParticles[j].GetPx();
+      double py = EventParticles[j].GetPy();
+      double pz = EventParticles[j].GetPz();
+      h[3]->Fill(std::sqrt(px * px + py * py + pz * pz));
+      h[4]->Fill(std::sqrt(px * px + py * py));
+      h[5]->Fill(EventParticles[j].GetEnergy());
+    }
+
+    int new_particles = 0;
+    for (int k = 0; k < 100; k++) {  // decadimento delle K* particles
+      if (EventParticles[k].GetIndex() == 6) {
+        double x = gRandom->Rndm();
+        if (x < .5) {
+          Particle pp{"Pione+"};
+          Particle km{"Kaone-"};
+          EventParticles[k].Decay2body(
+              pp, km);  // return di decay2body è verificato?
+          EventParticles.push_back(
+              pp);  // decay2body dovrebbe restituire un int
+          EventParticles.push_back(km);
+          new_particles += 2;
+        } else {
+          Particle pm{"Pione-"};
+          Particle kp{"Kaone+"};
+          EventParticles[k].Decay2body(pm, kp);
+          EventParticles.push_back(pm);
+          EventParticles.push_back(kp);
+          new_particles += 2;
         }
-      }
 
-      for (int n = 0; n < 100; n++) {
-        double phi = gRandom->Uniform(0, 2 * M_PI);
-        double theta = gRandom->Uniform(0, M_PI);
-        double rho = gRandom->Exp(1);
-        EventParticles[n].SetP(rho * sin(theta) * cos(phi),
-                               rho * sin(theta) * sin(phi), rho * cos(theta));
+        /*for (int i = 0; i < 100+new_particles; i++) {
+          for (int j = 0; j < 100+new_particles; j++) {
+            m[0]->Fill(EventParticles[i].InvMass(EventParticles[j]));
+          }
+        }*/
       }
     }
   }
+
+  TCanvas* c1 = new TCanvas("c1", "Histograms", 200, 10, 1000, 1000);
+  c1->Divide(3, 2);
+  for (int i = 0; i < 6; i++) {
+    c1->cd(i + 1);
+    h[i]->Draw();
+  }
+
+  TCanvas* c2 = new TCanvas("c2", "Invariant mass", 200, 10, 1000, 1000);
+  c2->Divide(3, 2);
+  m[0]->Draw();
+
+  gBenchmark->Show("Simulation time");
 }
