@@ -16,7 +16,7 @@ int main() {
   Particle::AddParticleType("K*", .89166, 0, .050);
   gRandom->SetSeed();
 
-  Particle EventParticles[120];  // vedi con array nativi
+  Particle EventParticles[120];
 
   TH1F* h[6];
   h[0] = new TH1F("h1", "Particle types", 7, 0, 7);
@@ -46,12 +46,11 @@ int main() {
   // m[5] = new TH1F("m6", "Particles energy", 100, 0, 7);
   for (int i = 0; i < 3; i++) m[i]->Sumw2();
 
-  for (int i = 0; i < 1E5; i++) {  // simulazione 10^5 eventi
-
+  for (int i = 0; i < 1E3; i++) {
     int k_index;
+    int new_particles = 0;
 
-    for (int j = 0; j < 100; j++) {  // setting type x 100 particles x evento
-
+    for (int j = 0; j < 100; j++) {
       double x = gRandom->Rndm();
       if (x < .4)
         EventParticles[j].SetIndex("Pione+");
@@ -84,54 +83,50 @@ int main() {
       h[3]->Fill(std::sqrt(px * px + py * py + pz * pz));
       h[4]->Fill(std::sqrt(px * px + py * py));
       h[5]->Fill(EventParticles[j].GetEnergy());
-    }
-
-    int new_particles = 0;
-    Particle pp{"Pione+"};
-    Particle km{"Kaone-"};
-    Particle pm{"Pione-"};
-    Particle kp{"Kaone+"};
-    for (int k = 0; k < 100; k++) {  // decadimento delle K* particles
-      if (EventParticles[k].GetIndex() == k_index) {
-        double x = gRandom->Rndm();
-        if (x < .5) {
-          EventParticles[k].Decay2body(pp, km);
-          EventParticles[100 + new_particles] = pp;
-          EventParticles[101 + new_particles] = km;
-          new_particles += 2;
-        } else {
-          EventParticles[k].Decay2body(pm, kp);
-          EventParticles[100 + new_particles] = pm;
-          EventParticles[101 + new_particles] = kp;
-          new_particles += 2;
+    
+      Particle pp{"Pione+"};
+      Particle km{"Kaone-"};
+      Particle pm{"Pione-"};
+      Particle kp{"Kaone+"};
+        if (EventParticles[j].GetIndex() == k_index) {
+          double x = gRandom->Rndm();
+          if (x < .5) {
+            EventParticles[j].Decay2body(pp, km);
+            EventParticles[100 + new_particles] = pp;
+            EventParticles[101 + new_particles] = km;
+            new_particles += 2;
+          } else {
+            EventParticles[j].Decay2body(pm, kp);
+            EventParticles[100 + new_particles] = pm;
+            EventParticles[101 + new_particles] = kp;
+            new_particles += 2;
+          }
         }
+      }
+
+      for (int n = 0; n < 100 + new_particles; n += 2) {
+        double inv_mass = EventParticles[n].InvMass(EventParticles[n + 1]);
+        m[0]->Fill(inv_mass);
+        /* if (EventParticles[n].GetCharge() == EventParticles[l].GetCharge())
+          m[1]->Fill(inv_mass);
+        else
+          m[2]->Fill(inv_mass); */
       }
     }
 
-    for (int n = 0; n < 100 + new_particles; n += 2) {
-      double inv_mass = EventParticles[n].InvMass(EventParticles[n + 1]);
-      m[0]->Fill(inv_mass);
-      /* int sign_1 =
-      Particle::fParticleType[EventParticles[n].GetIndex()].GetCharge(); int
-      sign_2 =
-      Particle::fParticleType[EventParticles[n+1].GetIndex()].GetCharge(); if (
-      sign_1 * sign_2 == 1) m[1]->Fill(inv_mass); else m[2]->Fill(inv_mass); */
+    TCanvas* c1 = new TCanvas("c1", "Histograms", 200, 10, 1000, 1000);
+    c1->Divide(3, 2);
+    for (int i = 0; i < 6; i++) {
+      c1->cd(i + 1);
+      h[i]->Draw();
     }
-  }
 
-  TCanvas* c1 = new TCanvas("c1", "Histograms", 200, 10, 1000, 1000);
-  c1->Divide(3, 2);
-  for (int i = 0; i < 6; i++) {
-    c1->cd(i + 1);
-    h[i]->Draw();
-  }
+    TCanvas* c2 = new TCanvas("c2", "Invariant mass", 200, 10, 1000, 1000);
+    c2->Divide(3, 2);
+    for (int i = 0; i < 3; i++) {
+      c2->cd(i + 1);
+      m[i]->Draw();
+    }
 
-  TCanvas* c2 = new TCanvas("c2", "Invariant mass", 200, 10, 1000, 1000);
-  c2->Divide(3, 2);
-  for (int i = 0; i < 3; i++) {
-    c2->cd(i + 1);
-    m[i]->Draw();
+    gBenchmark->Show("Simulation time");
   }
-
-  gBenchmark->Show("Simulation time");
-}
