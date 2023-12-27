@@ -28,7 +28,7 @@ int main() {
   h[4] = new TH1F("h4", "Transverse impulse", 100, 0, 7);
   h[5] = new TH1F("h5", "Particles energy", 100, 0, 7);
 
-  h[0]->SetFillColor(4);
+  h[0]->SetFillColor(4);  //cosmetics, si può eliminare
   h[0]->SetLineColor(1);
   for (int i = 1; i < 3; i++) {
     h[i]->SetFillColor(2);
@@ -37,7 +37,7 @@ int main() {
   for (int i = 3; i < 6; i++) {
     h[i]->SetFillColor(3);
     h[i]->SetLineColor(1);
-  }
+  } // fino a qua
 
   TH1F* m[6];
   m[0] = new TH1F("m0", "Inv mass of all particles", 100, 0, 7);
@@ -47,11 +47,6 @@ int main() {
   m[4] = new TH1F("m4", "pi-K discordant sign", 100, 0, 7);
   m[5] = new TH1F("m5", "pi-K from K* decay", 200, 0.7, 1.1);
   for (int i = 0; i < 6; i++) m[i]->Sumw2();
-
-  /* for (int i = 0; i < 6; i++) {
-    h[i]->SetDirectory(0);
-    m[i]->SetDirectory(0);
-  } */
 
   for (int i = 0; i < 1E5; i++) {
     int k_index;
