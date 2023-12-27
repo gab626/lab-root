@@ -28,7 +28,7 @@ int main() {
   h[4] = new TH1F("h4", "Transverse impulse", 100, 0, 7);
   h[5] = new TH1F("h5", "Particles energy", 100, 0, 7);
 
-  h[0]->SetFillColor(4);  //cosmetics, si può eliminare
+  h[0]->SetFillColor(4);  // cosmetics da rivedere
   h[0]->SetLineColor(1);
   for (int i = 1; i < 3; i++) {
     h[i]->SetFillColor(2);
@@ -37,14 +37,14 @@ int main() {
   for (int i = 3; i < 6; i++) {
     h[i]->SetFillColor(3);
     h[i]->SetLineColor(1);
-  } // fino a qua
+  }
 
   TH1F* m[6];
-  m[0] = new TH1F("m0", "Inv mass of all particles", 100, 0, 7);
-  m[1] = new TH1F("m1", "All particles concordant sign", 100, 0, 7);
-  m[2] = new TH1F("m2", "All particles discordant sign", 100, 0, 7);
-  m[3] = new TH1F("m3", "pi-K concordant sign", 100, 0, 7);
-  m[4] = new TH1F("m4", "pi-K discordant sign", 100, 0, 7);
+  m[0] = new TH1F("m0", "Inv mass of all particles", 200, 0.7, 1.1);
+  m[1] = new TH1F("m1", "All particles concordant sign", 200, 0.7, 1.1);
+  m[2] = new TH1F("m2", "All particles discordant sign", 200, 0.7, 1.1);
+  m[3] = new TH1F("m3", "pi-K concordant sign", 200, 0.7, 1.1);
+  m[4] = new TH1F("m4", "pi-K discordant sign", 200, 0.7, 1.1);
   m[5] = new TH1F("m5", "pi-K from K* decay", 200, 0.7, 1.1);
   for (int i = 0; i < 6; i++) m[i]->Sumw2();
 
@@ -104,21 +104,19 @@ int main() {
       h[5]->Fill(EventParticles[j].GetEnergy());
     }
 
-    for (int n = 0; n < 99 + over; n++) {
-      for (int p = n + 1; p < 100 + over; p++) {
-        double inv_mass = EventParticles[n].InvMass(EventParticles[p]);
-        m[0]->Fill(inv_mass);
-        double mass = EventParticles[n].GetMass() + EventParticles[p].GetMass();
-        if (EventParticles[n].GetCharge() == EventParticles[p].GetCharge()) {
-          m[1]->Fill(inv_mass);
-          if (mass > 0.4 && mass < 0.7) m[3]->Fill(inv_mass);
-        } else {
-          m[2]->Fill(inv_mass);
-          if (mass > 0.4 && mass < 0.7) m[4]->Fill(inv_mass);
-        }
+    for (int n = 0; n < 100 + over; n += 2) {
+      double inv_mass = EventParticles[n].InvMass(EventParticles[n + 1]);
+      m[0]->Fill(inv_mass);
+      double mass =
+          EventParticles[n].GetMass() + EventParticles[n + 1].GetMass();
+      if (EventParticles[n].GetCharge() == EventParticles[n + 1].GetCharge()) {
+        m[1]->Fill(inv_mass);
+        if (mass > 0.6 && mass < 0.65) m[3]->Fill(inv_mass);
+      } else {
+        m[2]->Fill(inv_mass);
+        if (mass > 0.6 && mass < 0.65) m[4]->Fill(inv_mass);
       }
     }
-    over = 0;
   }
 
   file->Write();
@@ -126,5 +124,5 @@ int main() {
 
   Particle::ResetArray();
 
-  gBenchmark->Show("Simulation time");
+  gBenchmark->Show("Simulation time");  // si può resettare?
 }

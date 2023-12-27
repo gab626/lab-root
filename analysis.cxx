@@ -18,16 +18,6 @@ void analysis() {
   TF1* f1 = new TF1("f1", "[0]", 0, 2 * M_PI);
   TF1* f2 = new TF1("f2", "[0]", 0, M_PI);
   TF1* f3 = new TF1("f3", "[0] * exp(-[1] * x)", 0, 7);
-  /* double val_1 = h1->GetEntries() / h1->GetNbinsX();
-  double val_2 = h2->GetEntries() / h2->GetNbinsX();
-  f1->SetParameter(0, val_1);
-  f1->SetParLimits(0, val_1 * 0.99, val_1 * 1.01);
-  f2->SetParameter(0, val_2);
-  f2->SetParLimits(0, val_2 * 0.99, val_2 * 1.01);
-  f3->SetParameter(0, 700000);
-  f3->SetParameter(1, 1);
-  f3->SetParLimits(0, 700000 * 0.99, 700000 * 1.01);
-  f3->SetParLimits(1, 0.99, 1.01); */
   f1->SetParameter(0, h1->GetMean());
   f2->SetParameter(0, h2->GetMean());
   f3->SetParameters(700000, h3->GetMean());
@@ -52,6 +42,26 @@ void analysis() {
             << " +/- " << fit3->GetParError(1) << '\n'
             << "Chi / NDF = " << fit3->GetChisquare() / fit3->GetNDF() << '\n'
             << "Probability = " << fit3->GetProb() << '\n';
+
+  TH1F* m1 = (TH1F*)file->Get("m1");
+  TH1F* m2 = (TH1F*)file->Get("m2");
+  TH1F* m3 = (TH1F*)file->Get("m3");
+  TH1F* m4 = (TH1F*)file->Get("m4");
+  TH1F* m5 = (TH1F*)file->Get("m5");
+  TH1F* msum1 = new TH1F("msum1", "All particles", 200, 0.7, 1.1);
+  TH1F* msum2 = new TH1F("msum2", "pi-K couples", 200, 0.7, 1.1);
+  msum1->SetDirectory(0);
+  msum2->SetDirectory(0);
+  m5->SetDirectory(0);
+  msum1->Add(m2, m1, 1, -1);
+  msum2->Add(m4, m3, 1, -1);
+
+  TCanvas* c1 = new TCanvas("c1", "All particles", 600, 500);
+  msum1->Draw();
+  TCanvas* c2 = new TCanvas("c2", "pi-K couples", 600, 500);
+  msum2->Draw();
+  TCanvas* c3 = new TCanvas("c3", "K* mass", 600, 500);
+  m5->Draw();
 
   file->Close();
 }
