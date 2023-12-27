@@ -6,6 +6,7 @@
 #include "resonancetype.h"
 
 int main() {
+  gBenchmark->Reset();
   gBenchmark->Start("Simulation time");
   Particle::AddParticleType("Pione+", .13957, 1);
   Particle::AddParticleType("Pione-", .13957, -1);
@@ -28,17 +29,6 @@ int main() {
   h[4] = new TH1F("h4", "Transverse impulse", 100, 0, 7);
   h[5] = new TH1F("h5", "Particles energy", 100, 0, 7);
 
-  h[0]->SetFillColor(4);  // cosmetics da rivedere
-  h[0]->SetLineColor(1);
-  for (int i = 1; i < 3; i++) {
-    h[i]->SetFillColor(2);
-    h[i]->SetLineColor(1);
-  }
-  for (int i = 3; i < 6; i++) {
-    h[i]->SetFillColor(3);
-    h[i]->SetLineColor(1);
-  }
-
   TH1F* m[6];
   m[0] = new TH1F("m0", "Inv mass of all particles", 200, 0.7, 1.1);
   m[1] = new TH1F("m1", "All particles concordant sign", 200, 0.7, 1.1);
@@ -49,7 +39,6 @@ int main() {
   for (int i = 0; i < 6; i++) m[i]->Sumw2();
 
   for (int i = 0; i < 1E5; i++) {
-    int k_index;
     int over = 0;
 
     for (int j = 0; j < 100; j++) {
@@ -107,7 +96,10 @@ int main() {
     for (int n = 0; n < 100 + over; n += 2) {
       double inv_mass = EventParticles[n].InvMass(EventParticles[n + 1]);
       m[0]->Fill(inv_mass);
-      double mass =
+      double mass =  // usiamo la somma delle masse per isolare i casi di coppie
+                     // pi-K dal momento che qualsiasi altra combinazione di
+                     // particelle risulterebbe avere una somma delle masse
+                     // maggiore o minore del range selezionato
           EventParticles[n].GetMass() + EventParticles[n + 1].GetMass();
       if (EventParticles[n].GetCharge() == EventParticles[n + 1].GetCharge()) {
         m[1]->Fill(inv_mass);
@@ -124,5 +116,5 @@ int main() {
 
   Particle::ResetArray();
 
-  gBenchmark->Show("Simulation time");  // si può resettare?
+  gBenchmark->Show("Simulation time");
 }
