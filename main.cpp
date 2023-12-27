@@ -18,10 +18,12 @@ int main() {
 
   Particle EventParticles[120];
 
+  TFile* file = new TFile("simulation.root", "RECREATE");
+
   TH1F* h[6];
   h[0] = new TH1F("h0", "Particle types", 7, 0, 7);
-  h[1] = new TH1F("h1", "Azimuthal angle", 100, 0, 2 * M_PI);
-  h[2] = new TH1F("h2", "Polar angle", 100, 0, M_PI);
+  h[1] = new TH1F("h1", "Azimuthal angle", 1000, 0, 2 * M_PI);
+  h[2] = new TH1F("h2", "Polar angle", 1000, 0, M_PI);
   h[3] = new TH1F("h3", "Impulse", 100, 0, 7);
   h[4] = new TH1F("h4", "Transverse impulse", 100, 0, 7);
   h[5] = new TH1F("h5", "Particles energy", 100, 0, 7);
@@ -46,8 +48,12 @@ int main() {
   m[5] = new TH1F("m5", "pi-K from K* decay", 200, 0.7, 1.1);
   for (int i = 0; i < 6; i++) m[i]->Sumw2();
 
-  for (int i = 0; i < 1E5; i++) {
+  /* for (int i = 0; i < 6; i++) {
+    h[i]->SetDirectory(0);
+    m[i]->SetDirectory(0);
+  } */
 
+  for (int i = 0; i < 1E5; i++) {
     int k_index;
     int over = 0;
 
@@ -120,23 +126,10 @@ int main() {
     over = 0;
   }
 
-  TCanvas* c1 = new TCanvas("c1", "Histograms", 200, 10, 1000, 1000);
-  c1->Divide(3, 2);
-  for (int i = 0; i < 6; i++) {
-    c1->cd(i + 1);
-    h[i]->Draw();
-  }
-
-  TCanvas* c2 = new TCanvas("c2", "Invariant mass", 200, 10, 1000, 1000);
-  c2->Divide(3, 2);
-  for (int i = 0; i < 6; i++) {
-    c2->cd(i + 1);
-    m[i]->Draw();
-  }
-
-  TFile* file = new TFile("simulation.root", "RECREATE");
   file->Write();
   file->Close();
+
+  Particle::ResetArray();
 
   gBenchmark->Show("Simulation time");
 }
