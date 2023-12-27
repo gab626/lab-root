@@ -18,11 +18,14 @@ class Particle {
   double GetPy() const;
   double GetPz() const;
   double GetMass() const;
-  int GetCharge() const;
+  int GetCharge() const;  // per confrontare le cariche nella fase di
+                          // riempimento degli istogrammi della massa invariante
   double GetEnergy() const;
   double InvMass(Particle& p);
   void SetP(double px, double py, double pz);
-  int Decay2body(Particle &dau1,Particle &dau2);  // tolto il const per ora
+  int Decay2body(Particle& dau1, Particle& dau2);
+  static void ResetArray();  // per "ripulire" l'array e permettere più volte
+                             // l'esecuzione del main in ROOT
 
  private:
   static const int fMaxNumParticleType = 10;

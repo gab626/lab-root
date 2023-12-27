@@ -95,6 +95,10 @@ void Particle::SetP(double px, double py, double pz) {
   fPz = pz;
 }
 
+void Particle::ResetArray() {
+  fNParticleType = 0;
+  }
+
 int Particle::Decay2body(Particle& dau1, Particle& dau2) {
   if (GetMass() == 0.0) {
     printf("Decayment cannot be performed if mass is zero\n");
