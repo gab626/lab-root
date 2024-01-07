@@ -6,13 +6,23 @@ void analysis() {
 
   gStyle->SetOptStat(2210);
   gStyle->SetOptFit(1111);
-  //  Terminal output and fitting
+
   TH1F* h[4];
   TH1::AddDirectory(kFALSE);
   h[0] = (TH1F*)file->Get("h0");
+  h[0]->GetXaxis()->SetBinLabel(1, "Pione+");
+  h[0]->GetXaxis()->SetBinLabel(2, "Pione-");
+  h[0]->GetXaxis()->SetBinLabel(3, "Kaone+");
+  h[0]->GetXaxis()->SetBinLabel(4, "Kaone-");
+  h[0]->GetXaxis()->SetBinLabel(5, "Protone+");
+  h[0]->GetXaxis()->SetBinLabel(6, "Protone-");
+  h[0]->GetXaxis()->SetBinLabel(7, "K*");
+  h[0]->GetXaxis()->SetLabelSize(0.05);
+  //  Terminal output and fitting
   for (int i = 1; i < 8; i++) {
-    std::cout << "Particle type " << i << ": " << h[0]->GetBinContent(i)
-              << " +/- " << h[0]->GetBinError(i) << '\n';
+    std::cout << h[0]->GetXaxis()->GetBinLabel(i) << ": "
+              << h[0]->GetBinContent(i) << " +/- " << h[0]->GetBinError(i)
+              << '\n';
   }
 
   h[1] = (TH1F*)file->Get("h1");
@@ -23,7 +33,7 @@ void analysis() {
   TF1* f3 = new TF1("f3", "expo", 0, 7);  // = exp([0] + [1] * x)
   f1->SetParameter(0, h[1]->GetMean());
   f2->SetParameter(0, h[2]->GetMean());
-  f3->SetParameters(std::log(h[3]->GetMaximum()), h[3]->GetMean());
+  f3->SetParameters(std::log(h[3]->GetMaximum()), -(h[3]->GetMean()));
   h[1]->Fit("f1", "RQ");
   h[2]->Fit("f2", "RQ");
   h[3]->Fit("f3", "RQ");
@@ -51,15 +61,19 @@ void analysis() {
   TH1F* m3 = (TH1F*)file->Get("m3");
   TH1F* m4 = (TH1F*)file->Get("m4");
   TH1F* m5 = (TH1F*)file->Get("m5");
-  TH1F* msum1 = new TH1F("msum1", "From all particles", 200, 0.7, 1.1);
-  TH1F* msum2 = new TH1F("msum2", "From pi-K couples", 200, 0.7, 1.1);
+  TH1F* msum1 = new TH1F("msum1", "Difference histogram from all particles",
+                         200, 0.7, 1.1);
+  TH1F* msum2 = new TH1F("msum2", "Difference histogram from pi-K couples", 200,
+                         0.7, 1.1);
   msum1->SetDirectory(0);
   msum2->SetDirectory(0);
   m5->SetDirectory(0);
   msum1->Add(m2, m1, 1, -1);
   msum2->Add(m4, m3, 1, -1);
 
-  TF1* g1 = new TF1("g1", "gaus", 0.7, 1.1);
+  TF1* g1 = new TF1("g1", "gaus", 0.76, 1.03);
+  // abbiamo preferito ridurre il range del fit a causa un
+  // salto anomalo nelle occorrenze ben visibile in figura
   TF1* g2 = new TF1("g2", "gaus", 0.7, 1.1);
   g1->SetParameters(msum1->GetMaximum(), msum1->GetMean(), msum1->GetRMS());
   g2->SetParameters(msum2->GetMaximum(), msum2->GetMean(), msum2->GetRMS());
@@ -88,7 +102,14 @@ void analysis() {
   h[1]->SetFillColor(2);
   h[2]->SetFillColor(2);
   h[3]->SetFillColor(3);
+  h[0]->SetTitle("Particles distribution; Particle types; Counts");
+  h[1]->SetTitle("Azimuthal angle distribution; Angle (rad); Counts");
+  h[2]->SetTitle("Polar angle distribution; Angle (rad); Counts");
+  h[3]->SetTitle(
+      "Linear momentum distribution; Linear momentum (GeV/c); Counts");
   for (int i = 0; i < 4; i++) {
+    h[i]->SetTitleSize(.04, "xy");
+    h[i]->SetTitleOffset(1, "xy");
     histo->cd(i + 1);
     h[i]->Draw();
   }
@@ -96,6 +117,26 @@ void analysis() {
   TCanvas* invmass =
       new TCanvas("invmass", "Invariant mass histograms", 600, 500);
   invmass->Divide(3, 1);
+  m5->SetTitle(
+      "pi-K invariant mass from K* decays only; Invariant mass (GeV/c^2); "
+      "Counts");
+  msum1->SetTitle(
+      "Difference histogram from all particles; Invariant mass (GeV/c^2); "
+      "Counts");
+  msum2->SetTitle(
+      "Difference histogram from pi-K couples; Invariant mass (GeV/c^2); "
+      "Counts");
+  m5->SetMarkerStyle(8);
+  msum1->SetMarkerStyle(8);
+  msum2->SetMarkerStyle(8);
+  m5->SetMarkerSize(.5);
+  msum1->SetMarkerSize(.5);
+  msum2->SetMarkerSize(.5);
+  m5->SetTitleSize(.04, "xy");
+  msum1->SetTitleSize(.04, "xy");
+  msum2->SetTitleSize(.04, "xy");
+  msum1->SetAxisRange(0, 1800, "y");
+  msum2->SetAxisRange(0, 1800, "y");
   invmass->cd(1);
   m5->Draw();
   invmass->cd(2);
@@ -106,6 +147,5 @@ void analysis() {
   file->Close();
 }
 
-// rivedere msum1, rivedere titoli istogrammi mettere titoli negli assi, vedere
-// valori xy, scegliere colori carini, fit m5?, rivedere nome parametri e box
-// statistica, cambiare marker in invmass
+// rivedere nome parametri e box
+// statistica, assi y in msum

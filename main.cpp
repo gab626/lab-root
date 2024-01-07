@@ -23,8 +23,8 @@ int main() {
 
   TH1F* h[6];
   h[0] = new TH1F("h0", "Particle types", 7, 0, 7);
-  h[1] = new TH1F("h1", "Azimuthal angle", 500, 0, 2 * M_PI);
-  h[2] = new TH1F("h2", "Polar angle", 500, 0, M_PI);
+  h[1] = new TH1F("h1", "Azimuthal angle", 200, 0, 2 * M_PI);
+  h[2] = new TH1F("h2", "Polar angle", 200, 0, M_PI);
   h[3] = new TH1F("h3", "Impulse", 100, 0, 7);
   h[4] = new TH1F("h4", "Transverse impulse", 100, 0, 7);
   h[5] = new TH1F("h5", "Particles energy", 100, 0, 7);
@@ -35,7 +35,8 @@ int main() {
   m[2] = new TH1F("m2", "All particles discordant sign", 200, 0.7, 1.1);
   m[3] = new TH1F("m3", "pi-K concordant sign", 200, 0.7, 1.1);
   m[4] = new TH1F("m4", "pi-K discordant sign", 200, 0.7, 1.1);
-  m[5] = new TH1F("m5", "pi-K from K* decay", 200, 0.7, 1.1);
+  m[5] =
+      new TH1F("m5", "pi-K invariant mass from K* decays only", 200, 0.7, 1.1);
   for (int i = 0; i < 6; i++) m[i]->Sumw2();
 
   for (int i = 0; i < 1E5; i++) {
