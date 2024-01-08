@@ -71,9 +71,7 @@ void analysis() {
   msum1->Add(m2, m1, 1, -1);
   msum2->Add(m4, m3, 1, -1);
 
-  TF1* g1 = new TF1("g1", "gaus", 0.76, 1.03);
-  // abbiamo preferito ridurre il range del fit a causa un
-  // salto anomalo nelle occorrenze ben visibile in figura
+  TF1* g1 = new TF1("g1", "gaus", 0.7, 1.1);
   TF1* g2 = new TF1("g2", "gaus", 0.7, 1.1);
   g1->SetParameters(msum1->GetMaximum(), msum1->GetMean(), msum1->GetRMS());
   g2->SetParameters(msum2->GetMaximum(), msum2->GetMean(), msum2->GetRMS());
@@ -107,6 +105,8 @@ void analysis() {
   h[2]->SetTitle("Polar angle distribution; Angle (rad); Counts");
   h[3]->SetTitle(
       "Linear momentum distribution; Linear momentum (GeV/c); Counts");
+  h[1]->SetAxisRange(49000, 51000, "y");
+  h[2]->SetAxisRange(49000, 51000, "y");
   for (int i = 0; i < 4; i++) {
     h[i]->SetTitleSize(.04, "xy");
     h[i]->SetTitleOffset(1, "xy");
@@ -144,8 +144,15 @@ void analysis() {
   invmass->cd(3);
   msum2->Draw();
 
+  histo->Print("histo.pdf");
+  histo->Print("histo.C");
+  histo->Print("histo.root");
+  invmass->Print("invmass.pdf");
+  invmass->Print("invmass.C");
+  invmass->Print("invmass.root");
+
   file->Close();
 }
 
 // rivedere nome parametri e box
-// statistica, assi y in msum
+// statistica

@@ -35,8 +35,7 @@ int main() {
   m[2] = new TH1F("m2", "All particles discordant sign", 200, 0.7, 1.1);
   m[3] = new TH1F("m3", "pi-K concordant sign", 200, 0.7, 1.1);
   m[4] = new TH1F("m4", "pi-K discordant sign", 200, 0.7, 1.1);
-  m[5] =
-      new TH1F("m5", "pi-K invariant mass from K* decays only", 200, 0.7, 1.1);
+  m[5] = new TH1F("m5", "pi-K invariant mass from K*", 200, 0.7, 1.1);
   for (int i = 0; i < 6; i++) m[i]->Sumw2();
 
   for (int i = 0; i < 1E5; i++) {
@@ -105,7 +104,9 @@ int main() {
       if (EventParticles[n].GetCharge() == EventParticles[n + 1].GetCharge()) {
         m[1]->Fill(inv_mass);
         if (mass > 0.6 && mass < 0.65) m[3]->Fill(inv_mass);
-      } else {
+      }
+      if (EventParticles[n].GetCharge() * EventParticles[n + 1].GetCharge() ==
+          -1) {
         m[2]->Fill(inv_mass);
         if (mass > 0.6 && mass < 0.65) m[4]->Fill(inv_mass);
       }
