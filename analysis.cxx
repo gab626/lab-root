@@ -70,10 +70,13 @@ void analysis() {
 
   TF1* g1 = new TF1("g1", "gaus", 0.7, 1.1);
   TF1* g2 = new TF1("g2", "gaus", 0.7, 1.1);
+  TF1* g3 = new TF1("g3", "gaus", 0.7, 1.1);
   g1->SetParameters(msum1->GetMaximum(), msum1->GetMean(), msum1->GetRMS());
   g2->SetParameters(msum2->GetMaximum(), msum2->GetMean(), msum2->GetRMS());
+  g3->SetParameters(m5->GetMaximum(), m5->GetMean(), m5->GetRMS());
   msum1->Fit("g1", "RQ");
   msum2->Fit("g2", "RQ");
+  m5->Fit("g3", "RQ");
   TF1* gauss1 = msum1->GetFunction("g1");
   TF1* gauss2 = msum2->GetFunction("g2");
 
@@ -90,7 +93,7 @@ void analysis() {
             << '\n'
             << "Probability = " << gauss2->GetProb() << '\n';
   //  Canvas and cosmetics
-  gStyle->SetOptStat(2210);
+  gStyle->SetOptStat(10);
   gStyle->SetOptFit(1111);
   TCanvas* histo =
       new TCanvas("histo", "Particles, angles and impulse", 600, 500);
@@ -134,6 +137,7 @@ void analysis() {
   m5->SetTitleSize(.04, "xy");
   msum1->SetTitleSize(.04, "xy");
   msum2->SetTitleSize(.04, "xy");
+  m5->SetAxisRange(0, 1800, "y");
   msum1->SetAxisRange(0, 1800, "y");
   msum2->SetAxisRange(0, 1800, "y");
   invmass->cd(1);
