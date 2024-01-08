@@ -4,9 +4,6 @@
 void analysis() {
   TFile* file = new TFile("simulation.root");
 
-  gStyle->SetOptStat(2210);
-  gStyle->SetOptFit(1111);
-
   TH1F* h[4];
   TH1::AddDirectory(kFALSE);
   h[0] = (TH1F*)file->Get("h0");
@@ -93,6 +90,8 @@ void analysis() {
             << '\n'
             << "Probability = " << gauss2->GetProb() << '\n';
   //  Canvas and cosmetics
+  gStyle->SetOptStat(2210);
+  gStyle->SetOptFit(1111);
   TCanvas* histo =
       new TCanvas("histo", "Particles, angles and impulse", 600, 500);
   histo->Divide(2, 2);
@@ -144,15 +143,12 @@ void analysis() {
   invmass->cd(3);
   msum2->Draw();
 
-  histo->Print("histo.pdf");
-  histo->Print("histo.C");
-  histo->Print("histo.root");
-  invmass->Print("invmass.pdf");
-  invmass->Print("invmass.C");
-  invmass->Print("invmass.root");
+  histo->Print("histo.pdf", "RECREATE");
+  histo->Print("histo.C", "RECREATE");
+  histo->Print("histo.root", "RECREATE");
+  invmass->Print("invmass.pdf", "RECREATE");
+  invmass->Print("invmass.C", "RECREATE");
+  invmass->Print("invmass.root", "RECREATE");
 
   file->Close();
 }
-
-// rivedere nome parametri e box
-// statistica
