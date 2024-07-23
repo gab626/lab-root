@@ -1,5 +1,10 @@
 #include <cmath>
 #include <iostream>
+#include <TFile.h>
+#include <TH1.h>
+#include <TF1.h>
+#include <TCanvas.h>
+#include <TStyle.h>
 
 void analysis() {
   TFile* file = new TFile("simulation.root");
